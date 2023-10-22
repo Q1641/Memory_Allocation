@@ -20,15 +20,13 @@ except:
 
 memory = []
 memory_status = []
-usage = [None for x in range(10)]
+usage = [None for x in range(1000)]
+queue = [] #Secondary factor determining which process to be swapped out
 page_fault = 0
 for index, page in enumerate(page_list):
-    # print(f'Page {index + 1}: {page}')
     curr_mem = []
     if page in memory:
-        # print('Page is already in memory')
-        # print(memory)
-        usage[memory.index(page)] += 1
+        usage[page] += 1
         for frame in memory:
             if frame == None:
                 curr_mem.append(-1)
@@ -37,10 +35,12 @@ for index, page in enumerate(page_list):
         memory_status.append(curr_mem)
         continue
     if len(memory) < num_of_frames:
-        # print('Page is not in memory and needed to be swapped in')
         memory.append(page)
-        usage[page] = 0
-        # print(memory)
+        queue.append(memory.index(page))
+        if usage[page] == None:
+            usage[page] = 0
+        else:
+            usage[page] += 1
         page_fault += 1
         for i in range(num_of_frames):
             try:
@@ -49,23 +49,31 @@ for index, page in enumerate(page_list):
                 curr_mem.append(-1)
         memory_status.append(curr_mem)
         continue
-    # print('Page is not in memory, another frame needed to be swapped out')
-    if usage[page] == None:
-        usage[page] = 0
-    else:
-        usage[page] += 1
-    tmp = []
-    for frame in memory:
-        tmp.append(frame)
-    memory[tmp.index(min(tmp))] = page
-    # print(memory)
-    page_fault += 1
-    for frame in memory:
-        if frame == None:
-            curr_mem.append(-1)
-            continue
-        curr_mem.append(frame)
-    memory_status.append(curr_mem)
+    if True:
+        min_frequency = 9999
+        for count in usage:
+            if count == None:
+                continue
+            if min_frequency > count:
+                min_frequency = count
+        min_frequency_pages = [i for i, x in enumerate(usage) if x == min_frequency]
+        for ele in queue:
+            if ele in min_frequency_pages:
+                swap_index = memory.index(ele)
+                memory[swap_index] = page
+                queue.remove(ele)
+                break
+        if usage[page] == None:
+            usage[page] = 0
+        else:
+            usage[page] += 1
+        page_fault += 1
+        for frame in memory:
+            if frame == None:
+                curr_mem.append(-1)
+                continue
+            curr_mem.append(frame)
+        memory_status.append(curr_mem)
 
 output = '{:15s}'.format('Page') + ' |'
 
