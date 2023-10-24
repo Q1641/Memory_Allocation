@@ -25,11 +25,11 @@ page_fault = 0
 for index, page in enumerate(page_list):
     curr_mem = []
     if page in memory:
-        for frame in memory:
-            if frame == None:
+        for i in range(num_of_frames):
+            try:
+                curr_mem.append(memory[i])
+            except:
                 curr_mem.append(-1)
-                continue
-            curr_mem.append(frame)
         memory_status.append(curr_mem)
         continue
     if len(memory) < num_of_frames:
@@ -48,11 +48,11 @@ for index, page in enumerate(page_list):
         memory[last_index] = page
         queue.append(memory.index(page))
         page_fault += 1
-        for frame in memory:
-            if frame == None:
+        for i in range(num_of_frames):
+            try:
+                curr_mem.append(memory[i])
+            except:
                 curr_mem.append(-1)
-                continue
-            curr_mem.append(frame)
         memory_status.append(curr_mem)
 
 output = '{:15s}'.format('Page') + ' |'

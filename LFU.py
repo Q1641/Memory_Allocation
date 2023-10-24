@@ -20,28 +20,25 @@ except:
 
 memory = []
 memory_status = []
-usage = [None for x in range(1000)]
+usage = [0 for x in range(10)]
 queue = [] #Secondary factor determining which process to be swapped out
 page_fault = 0
 for index, page in enumerate(page_list):
     curr_mem = []
+    # print(usage)
     if page in memory:
         usage[page] += 1
-        for frame in memory:
-            if frame == None:
+        for i in range(num_of_frames):
+            try:
+                curr_mem.append(memory[i])
+            except:
                 curr_mem.append(-1)
-                continue
-            curr_mem.append(frame)
         memory_status.append(curr_mem)
         continue
     if len(memory) < num_of_frames:
-        memory.append(page)
-        queue.append(memory.index(page))
-        if usage[page] == None:
-            usage[page] = 0
-        else:
-            usage[page] += 1
+        usage[page] += 1
         page_fault += 1
+        memory.append(page)
         for i in range(num_of_frames):
             try:
                 curr_mem.append(memory[i])
@@ -50,30 +47,23 @@ for index, page in enumerate(page_list):
         memory_status.append(curr_mem)
         continue
     if True:
-        min_frequency = 9999
-        for count in usage:
-            if count == None:
-                continue
-            if min_frequency > count:
-                min_frequency = count
-        min_frequency_pages = [i for i, x in enumerate(usage) if x == min_frequency]
-        for ele in queue:
-            if ele in min_frequency_pages:
-                swap_index = memory.index(ele)
-                memory[swap_index] = page
-                queue.remove(ele)
-                break
-        if usage[page] == None:
-            usage[page] = 0
-        else:
-            usage[page] += 1
-        page_fault += 1
+        min_frequency = usage[memory[0]]
         for frame in memory:
-            if frame == None:
+            if usage[frame] < min_frequency:
+                min_frequency = usage[frame]
+        for i in range(0, index):
+            if page_list[i] in memory and usage[page_list[i]] == min_frequency:
+                memory[memory.index(page_list[i])] = page
+                break
+        usage[page] += 1
+        page_fault += 1
+        for i in range(num_of_frames):
+            try:
+                curr_mem.append(memory[i])
+            except:
                 curr_mem.append(-1)
-                continue
-            curr_mem.append(frame)
         memory_status.append(curr_mem)
+        continue
 
 output = '{:15s}'.format('Page') + ' |'
 

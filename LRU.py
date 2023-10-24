@@ -25,11 +25,11 @@ for index, page in enumerate(page_list):
     curr_mem = []
     # The required page is already in memory
     if page in memory:
-        for frame in memory:
-            if frame == None:
+        for i in range(num_of_frames):
+            try:
+                curr_mem.append(memory[i])
+            except:
                 curr_mem.append(-1)
-                continue
-            curr_mem.append(frame)
         memory_status.append(curr_mem)
         continue
     # The required page is missing => swap in
@@ -54,11 +54,11 @@ for index, page in enumerate(page_list):
                     swapping_index = lru_check.index(False)
         memory[swapping_index] = page
         page_fault += 1
-        for frame in memory:
-            if frame == None:
+        for i in range(num_of_frames):
+            try:
+                curr_mem.append(memory[i])
+            except:
                 curr_mem.append(-1)
-                continue
-            curr_mem.append(frame)
         memory_status.append(curr_mem)
 
 output = '{:15s}'.format('Page') + ' |'
