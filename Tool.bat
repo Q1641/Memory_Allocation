@@ -17,7 +17,7 @@ if %var%==2 (goto lru)
 if %var%==3 (goto mru)
 if %var%==4 (goto lfu)
 if %var%==5 (goto mfu)
-if %var%==6 (goto 2nd)
+if %var%==6 (goto sec)
 goto end
 
 :fifo
